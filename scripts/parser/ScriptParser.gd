@@ -298,6 +298,9 @@ func _parse_directive(line: String, line_no: int = 0) -> PlotNode:
 				node.expression = args[0]
 				node.next_scene = "DATESWITCH"
 				node.note = "side"
+		"locate":
+			if args.size() > 0:
+				node.location = args[0]
 		"title":        node.back_to_title = true
 		"rechoose":     node.rechoose = true
 		"end":          node.end_story = true

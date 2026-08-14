@@ -10,6 +10,10 @@ signal scene_changed(scene_name: String)
 # --- 游戏性 ---
 # (plot_loaded, node_advanced, choice_made reserved for future use)
 
+# --- 地点 ---
+@warning_ignore("unused_signal")
+signal location_changed(location_name: String)
+
 # --- 音频 ---
 # (audio_unlock_requested reserved for future use)
 

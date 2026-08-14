@@ -509,8 +509,16 @@ func _apply_node_effects() -> void:
 	_apply_wait()
 	_apply_stop_transition()
 	_apply_fade_black()
+	_apply_location()
 
 	_update_dialogue_display()
+
+
+func _apply_location() -> void:
+	# @locate 地点名 — 收敛到 GameManager API（存档作用域 current_location）
+	if _current_node.location.is_empty():
+		return
+	GameManager.set_current_location(_current_node.location)
 
 
 func _apply_background() -> void:
@@ -2151,6 +2159,9 @@ func _advance_to_first_text() -> void:
 			VNAudioService.set_ambience_layer(0, node.ambience.play, node.ambience.ambience_volume)
 		if node.sfx_short and not node.sfx_short.play.is_empty():
 			AudioManager.play_sfx(node.sfx_short.play)
+		# @locate — 地点写入（存档作用域 current_location）
+		if not node.location.is_empty():
+			GameManager.set_current_location(node.location)
 		# V2 flow nodes — @set 立即执行，其余停下交给 _execute_flow_control
 		if node.type == "set":
 			if not node.expression.is_empty():

@@ -56,6 +56,27 @@ var current_background: String = ""    # 子场景共享背景 — 与主菜单�
 ## 任何 .gd / .tscn 均可通过 GameManager.script_context 访问
 var script_context: ScriptContext = null
 
+
+## 当前地点（存档作用域 current_location；未设置返回 ""，消费侧回退默认北门）
+func get_current_location() -> String:
+	if script_context:
+		var v: Variant = script_context.get_var("current_location")
+		if typeof(v) == TYPE_STRING and not v.is_empty():
+			return v
+	return ""
+
+
+## 地点系统唯一写入入口 — @locate 运行时与 Map"前往"都经此调用。
+## 写时存储原值（读时回退），仅开发模式对无效名给出警告。
+func set_current_location(location_name: String) -> void:
+	if not script_context:
+		push_warning("GameManager: set_current_location called without script_context — ", location_name)
+		return
+	if OS.is_debug_build() and not MapData.has_location(location_name):
+		push_warning("GameManager: location not on map — ", location_name, "（地图将回退默认）")
+	script_context.set_var("current_location", location_name)
+	EventBus.location_changed.emit(location_name)
+
 var _settings: AppSettings
 var _saves: Array  # Array[SaveData | null] size MAX_SLOTS
 var _save_config: ConfigFile

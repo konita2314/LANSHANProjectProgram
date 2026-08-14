@@ -14,6 +14,9 @@ class_name PlotNode extends Resource
 ## 背景图片路径（粘性 — 持续到更改为止）
 @export var bg: String = ""
 
+## 当前地点（@locate 指令参数 — 地图地点名；状态实际存于存档作用域变量，天然粘性）
+@export var location: String = ""
+
 ## 背景对齐："" = 居中, "up" = 顶部对齐, "down" = 底部对齐
 @export var bg_align: String = ""
 

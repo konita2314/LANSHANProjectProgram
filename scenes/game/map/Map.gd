@@ -7,31 +7,9 @@ signal back_requested()
 signal goto_location_requested(location_name: String)
 
 # ---------------------------------------------------------------------------
-# 地点数据
+# 地点数据 — 上移至 scripts/resources/MapData.gd（地点系统共享：@locate / API 校验）
 # ---------------------------------------------------------------------------
-const LOCATIONS: Array[Dictionary] = [
-	{"name": "北门",         "description": "大家经常会走的大门。",                     "x": 609,  "y": 396},
-	{"name": "科技楼",       "description": "学校的行政楼。",                          "x": 679,  "y": 363},
-	{"name": "逸天楼",       "description": "高一的教学楼。我的教室在这里。",            "x": 574,  "y": 559},
-	{"name": "哲贵楼",       "description": "高一的教学楼。",                          "x": 570,  "y": 464},
-	{"name": "老校区楼",     "description": "似乎已经作废的地方。",                     "x": 866,  "y": 256},
-	{"name": "博雅楼",       "description": "高二的教学楼。",                          "x": 485,  "y": 600},
-	{"name": "图书馆",       "description": "学校图书馆。应该能在这看到什么。",          "x": 917,  "y": 691},
-	{"name": "食堂",         "description": "学校食堂。挺不便宜的。",                   "x": 860,  "y": 653},
-	{"name": "桃园",         "description": "高一部分的寝室。",                        "x": 866,  "y": 359},
-	{"name": "李园",         "description": "高二的寝室楼。",                          "x": 714,  "y": 597},
-	{"name": "高三校区",     "description": "学校的高三学区。",                        "x": 1053, "y": 188},
-	{"name": "操场",         "description": "学校的操场。",                            "x": 824,  "y": 463},
-	{"name": "篮球场",       "description": "学校的篮球场。",                          "x": 794,  "y": 559},
-	{"name": "乒乓球场",     "description": "乒乓球场，就在操场旁边。",                  "x": 920,  "y": 559},
-	{"name": "兰园",         "description": "很大的女生寝室。",                        "x": 725,  "y": 672},
-	{"name": "小卖部",       "description": "应该能在这买点东西。",                     "x": 817,  "y": 638},
-	{"name": "后山",         "description": "后山公园，现在还正在建设。",                "x": 1174, "y": 678},
-	{"name": "体育馆",       "description": "似乎没什么用的体育馆。",                   "x": 1085, "y": 713},
-	{"name": "南门",         "description": "临近二环路的大门，交通比较方便。",          "x": 964,  "y": 778},
-	{"name": "高三校区门",   "description": "高三校区的专用大门。",                     "x": 872,  "y": 167},
-	{"name": "桂园",        "description": "高一男生寝室。我住在这。",                 "x": 1161,  "y": 806},
-]
+const LOCATIONS: Array[Dictionary] = MapData.LOCATIONS
 
 const MAP_W: float = 1672.0
 const MAP_H: float = 941.0
@@ -281,6 +259,8 @@ func _on_goto_click(event: InputEvent) -> void:
 			return
 		AudioManager.play_click()
 		goto_location_requested.emit(LOCATIONS[_selected_idx].name)
+		# 地点系统："前往" = 显式操作，经 API 写入当前地点（浏览/选择不回写）
+		GameManager.set_current_location(LOCATIONS[_selected_idx].name)
 
 
 func set_goto_enabled(enabled: bool) -> void:
@@ -817,7 +797,10 @@ func _on_enter() -> void:
 
 	_menu_active = true
 
-	_select_location(0, false)
+	# 首次选中 = 当前地点（存档作用域 current_location）；
+	# 未设置 / 不在地图上 → 默认北门（LOCATIONS 第一项）。选择浏览不回写。
+	var loc_idx: int = MapData.get_index(GameManager.get_current_location())
+	_select_location(loc_idx if loc_idx >= 0 else 0, false)
 
 func _on_exit() -> void:
 	_disabled = true
