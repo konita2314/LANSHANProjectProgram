@@ -1,0 +1,147 @@
+[gd_scene format=3 uid="uid://b3ai5dokn45d3"]
+
+[ext_resource type="Script" uid="uid://cq5ii0ym4qifx" path="res://scenes/game/map/Map.gd" id="1_map"]
+[ext_resource type="Texture2D" uid="uid://dalpf1heekcjc" path="res://assets/map/Map.png" id="2_x27a8"]
+
+[node name="Map" type="Control" unique_id=277610888]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_map")
+
+[node name="MapClip" type="Control" parent="." unique_id=2033606287]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="MapContainer" type="Control" parent="MapClip" unique_id=1301764486]
+anchors_preset = 0
+offset_right = 1672.0
+offset_bottom = 941.0
+mouse_filter = 2
+
+[node name="MapTexture" type="TextureRect" parent="MapClip/MapContainer" unique_id=1327273889]
+texture_filter = 4
+layout_mode = 0
+offset_right = 1672.0
+offset_bottom = 941.0
+mouse_filter = 2
+texture = ExtResource("2_x27a8")
+
+[node name="TitleBg" type="ColorRect" parent="." unique_id=2145032384]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.4509804)
+
+[node name="TitleLabel" type="Label" parent="." unique_id=1420801679]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 40.0
+offset_right = 65.0
+offset_bottom = 67.0
+theme_override_colors/font_color = Color(1, 1, 1, 0.8980392)
+theme_override_font_sizes/font_size = 48
+text = "MAP"
+
+[node name="SubtitleLabel" type="Label" parent="." unique_id=888084930]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 92.0
+offset_right = 65.0
+offset_bottom = 119.0
+theme_override_colors/font_color = Color(1, 1, 1, 0.34901962)
+theme_override_font_sizes/font_size = 18
+
+[node name="InfoPanel" type="Control" parent="." unique_id=100923152]
+visible = false
+layout_mode = 1
+anchor_left = 0.67
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 1
+
+[node name="Fill" type="ColorRect" parent="InfoPanel" unique_id=375859945]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.025
+anchor_top = 0.05
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -0.1600666
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.9490196)
+
+[node name="NameLabel" type="Label" parent="InfoPanel" unique_id=1091498842]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.027
+anchor_top = 0.08800001
+anchor_right = 0.95
+anchor_bottom = 0.16
+offset_left = -0.19523335
+offset_top = -12.960003
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 28
+
+[node name="DescLabel" type="Label" parent="InfoPanel" unique_id=1317192428]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.06
+anchor_top = 0.2
+anchor_right = 0.95
+anchor_bottom = 0.38
+theme_override_colors/font_color = Color(1, 1, 1, 0.49803922)
+theme_override_font_sizes/font_size = 14
+
+[node name="SuggestLabel" type="Label" parent="InfoPanel" unique_id=1273397353]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.06
+anchor_top = 0.42
+anchor_right = 0.95000005
+anchor_bottom = 0.72400004
+offset_right = -3.0517578e-05
+offset_bottom = -0.2800293
+
+[node name="BorderBot" type="ColorRect" parent="InfoPanel" unique_id=1502110129]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.18
+anchor_right = 0.95
+anchor_bottom = 0.18
+offset_top = -1.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.2)
+
+[node name="Goto" type="Label" parent="InfoPanel" unique_id=2075447085]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.096
+anchor_top = 0.74300003
+anchor_right = 1.0710001
+anchor_bottom = 0.837
+offset_left = -0.15042877
+offset_top = 0.039978027
+offset_right = 0.009552002
+offset_bottom = 0.35998535
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 28
+text = "前往"

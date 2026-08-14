@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://4hmwo1e5b44e"]
+
+[ext_resource type="Script" uid="uid://dhiiium8c4s7s" path="res://scenes/mainmenu/rewards/AchievementList.gd" id="1_achievements"]
+
+[node name="Achievement" type="Control" unique_id=1404751315]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_achievements")
+
+[node name="TitleLabel" type="Label" parent="." unique_id=1518542511]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 24.0
+offset_top = 16.0
+offset_right = 400.0
+offset_bottom = 88.0
+text = "Achievements"
+
+[node name="SubtitleContainer" type="Control" parent="." unique_id=1061624706]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 0
+offset_left = 24.0
+offset_top = 96.0
+offset_right = 400.0
+offset_bottom = 136.0
+
+[node name="ListScroll" type="ScrollContainer" parent="." unique_id=35443305]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.060000002
+anchor_top = 0.2
+anchor_right = 0.95
+anchor_bottom = 0.85
+offset_left = 0.19999695
+
+[node name="ItemsContainer" type="VBoxContainer" parent="ListScroll" unique_id=1950608989]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3

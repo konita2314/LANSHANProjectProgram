@@ -1,0 +1,370 @@
+[gd_scene format=3 uid="uid://bssbak6acgjp5"]
+
+[ext_resource type="Script" uid="uid://c5awx3fbfx7ls" path="res://scenes/game/registration/RegistrationScene.gd" id="1_reg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_window"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0, 0, 0, 0.25)
+shadow_size = 24
+shadow_offset = Vector2(0, 8)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_form_bg"]
+bg_color = Color(0.960784, 0.968627, 0.980392, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.8, 0.85, 0.9, 1)
+
+[node name="RegistrationScene" type="Control" unique_id=792091174]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_reg")
+
+[node name="Backdrop" type="ColorRect" parent="." unique_id=1484743632]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.14902, 0.160784, 0.180392, 0.85)
+
+[node name="BrowserWindow" type="PanelContainer" parent="." unique_id=224034924]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -559.0
+offset_top = -314.5
+offset_right = 547.0
+offset_bottom = 314.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_window")
+
+[node name="VBox" type="VBoxContainer" parent="BrowserWindow" unique_id=1302498713]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="ChromeBar" type="ColorRect" parent="BrowserWindow/VBox" unique_id=1477371069]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+color = Color(0.88, 0.89, 0.91, 1)
+
+[node name="HBox" type="HBoxContainer" parent="BrowserWindow/VBox/ChromeBar" unique_id=207578388]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TabContainer" type="MarginContainer" parent="BrowserWindow/VBox/ChromeBar/HBox" unique_id=322981610]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+
+[node name="TabBg" type="ColorRect" parent="BrowserWindow/VBox/ChromeBar/HBox/TabContainer" unique_id=1918269278]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="TabLabel" type="Label" parent="BrowserWindow/VBox/ChromeBar/HBox/TabContainer/TabBg" unique_id=165442485]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "中考志愿填报"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CloseButton" type="Button" parent="BrowserWindow/VBox/ChromeBar/HBox" unique_id=1008904991]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.3, 0.3, 0.3, 1)
+theme_override_colors/font_hover_color = Color(0.8, 0.1, 0.1, 1)
+theme_override_font_sizes/font_size = 20
+text = "×"
+flat = true
+
+[node name="AddressBar" type="ColorRect" parent="BrowserWindow/VBox" unique_id=1176732626]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+color = Color(0.96, 0.96, 0.96, 1)
+
+[node name="Margin" type="MarginContainer" parent="BrowserWindow/VBox/AddressBar" unique_id=143537753]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 6
+
+[node name="UrlBg" type="ColorRect" parent="BrowserWindow/VBox/AddressBar/Margin" unique_id=596703929]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="BrowserWindow/VBox/AddressBar/Margin/UrlBg" unique_id=1241949817]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 12.0
+offset_top = -11.5
+offset_right = 265.0
+offset_bottom = 11.5
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.45, 0.45, 0.45, 1)
+theme_override_font_sizes/font_size = 14
+text = "http://bori.gov.cn:6111/education/zhiyuantianbao?stu=1070020070205114514"
+
+[node name="ContentArea" type="MarginContainer" parent="BrowserWindow/VBox" unique_id=741505138]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 32
+
+[node name="VBox" type="VBoxContainer" parent="BrowserWindow/VBox/ContentArea" unique_id=113191357]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="HeaderGroup" type="VBoxContainer" parent="BrowserWindow/VBox/ContentArea/VBox" unique_id=1666122963]
+layout_mode = 2
+
+[node name="PageTitle" type="Label" parent="BrowserWindow/VBox/ContentArea/VBox/HeaderGroup" unique_id=1734121114]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.12, 0.28, 0.55, 1)
+theme_override_font_sizes/font_size = 28
+text = "帛日市教育局 中考志愿填报系统"
+horizontal_alignment = 1
+
+[node name="PageSubtitle" type="Label" parent="BrowserWindow/VBox/ContentArea/VBox/HeaderGroup" unique_id=487922207]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 15
+text = "请确认身份信息。"
+horizontal_alignment = 1
+
+[node name="FormPanel" type="PanelContainer" parent="BrowserWindow/VBox/ContentArea/VBox" unique_id=1692440843]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_form_bg")
+
+[node name="HBox" type="HBoxContainer" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel" unique_id=2013070854]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="PhotoBg" type="ColorRect" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox" unique_id=1893174970]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+color = Color(0.729412, 0.819608, 0.929412, 1)
+
+[node name="LblPhoto" type="Label" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox/PhotoBg" unique_id=640480191]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.25, 0.35, 0.45, 1)
+text = "暂无照片"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VSeparator" type="ColorRect" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox" unique_id=608022934]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+color = Color(0.8, 0.82, 0.86, 1)
+
+[node name="GridMargin" type="MarginContainer" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox" unique_id=328463330]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Grid" type="GridContainer" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox/GridMargin" unique_id=1013578247]
+layout_mode = 2
+theme_override_constants/h_separation = 24
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="LblName" type="Label" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox/GridMargin/Grid" unique_id=1079024135]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.3, 0.3, 1)
+text = "姓名"
+vertical_alignment = 1
+
+[node name="NameInput" type="LineEdit" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox/GridMargin/Grid" unique_id=738877508]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+placeholder_text = "请输入姓名"
+
+[node name="LblGender" type="Label" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox/GridMargin/Grid" unique_id=1311236290]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.3, 0.3, 1)
+text = "性别"
+vertical_alignment = 1
+
+[node name="ValGender" type="Label" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox/GridMargin/Grid" unique_id=1657185554]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "男"
+vertical_alignment = 1
+
+[node name="LblDob" type="Label" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox/GridMargin/Grid" unique_id=1037092542]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.3, 0.3, 1)
+text = "出生日期"
+vertical_alignment = 1
+
+[node name="ValDob" type="Label" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox/GridMargin/Grid" unique_id=1826064623]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "2007.02.05"
+vertical_alignment = 1
+
+[node name="LblRegion" type="Label" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox/GridMargin/Grid" unique_id=99944432]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.3, 0.3, 1)
+text = "户籍所在地"
+vertical_alignment = 1
+
+[node name="ValRegion" type="Label" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox/GridMargin/Grid" unique_id=162232330]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "帛日市浮城区"
+vertical_alignment = 1
+
+[node name="LblSchool" type="Label" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox/GridMargin/Grid" unique_id=147617736]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.3, 0.3, 1)
+text = "第一志愿"
+vertical_alignment = 1
+
+[node name="ValSchool" type="Label" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox/GridMargin/Grid" unique_id=810563097]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "帛日火兰山中学"
+vertical_alignment = 1
+
+[node name="LblId" type="Label" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox/GridMargin/Grid" unique_id=902992604]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.3, 0.3, 1)
+text = "考生号"
+vertical_alignment = 1
+
+[node name="ValId" type="Label" parent="BrowserWindow/VBox/ContentArea/VBox/FormPanel/HBox/GridMargin/Grid" unique_id=284086317]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "1070020070205114514"
+vertical_alignment = 1
+
+[node name="BottomAction" type="HBoxContainer" parent="BrowserWindow/VBox/ContentArea/VBox" unique_id=1613509268]
+layout_mode = 2
+
+[node name="WarningBanner" type="Label" parent="BrowserWindow/VBox/ContentArea/VBox/BottomAction" unique_id=1090134363]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.25, 0.1, 1)
+text = "警告：还未输入姓名"
+vertical_alignment = 1
+
+[node name="ConfirmButton" type="Button" parent="BrowserWindow/VBox/ContentArea/VBox/BottomAction" unique_id=1198812047]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 48)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "确定"
+
+[node name="Toast" type="Control" parent="." unique_id=638333269]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = 220.0
+offset_right = 180.0
+offset_bottom = 264.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ToastBg" type="ColorRect" parent="Toast" unique_id=1700535431]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.15, 0.15, 0.95)
+
+[node name="ToastLabel" type="Label" parent="Toast" unique_id=237233986]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "请先在该网页中完成姓名填报内容。"
+horizontal_alignment = 1
+vertical_alignment = 1

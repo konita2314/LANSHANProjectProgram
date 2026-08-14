@@ -1,0 +1,108 @@
+[gd_scene format=3 uid="uid://mswnqeerc6cm"]
+
+[ext_resource type="Script" uid="uid://bwhtr4guviv18" path="res://scenes/mainmenu/SplashScene.gd" id="1_splash"]
+
+[node name="SplashScene" type="Control" unique_id=5706269]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_splash")
+
+[node name="BlackBg" type="ColorRect" parent="." unique_id=1744347041]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.039, 0.039, 0.047, 1)
+
+[node name="LogoContainer" type="Control" parent="." unique_id=2087940245]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="LogoImage" type="TextureRect" parent="LogoContainer" unique_id=752068247]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 48.0
+offset_top = -150.0
+offset_right = 348.0
+offset_bottom = 150.0
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="WarningContainer" type="Control" parent="." unique_id=912426177]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="DividerLine" type="ColorRect" parent="WarningContainer" unique_id=2109208218]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 48.0
+offset_top = 80.0
+offset_right = 48.0
+offset_bottom = 82.0
+color = Color(1, 1, 1, 0.4)
+
+[node name="NoticeLabel" type="Label" parent="WarningContainer" unique_id=801153119]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 48.0
+offset_top = 100.0
+offset_right = 800.0
+offset_bottom = 200.0
+text = "Notice / 警告"
+
+[node name="EpilepsyLabel" type="Label" parent="WarningContainer" unique_id=342992259]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 48.0
+offset_top = 240.0
+offset_right = 700.0
+offset_bottom = 386.0
+text = "癫痫警告文本"
+autowrap_mode = 3
+
+[node name="LegalLabel" type="Label" parent="WarningContainer" unique_id=343269275]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 47.0
+offset_top = 418.0
+offset_right = 699.0
+offset_bottom = 598.0
+text = "法律声明文本"
+autowrap_mode = 3
+
+[node name="ContinueLabel" type="Label" parent="WarningContainer" unique_id=1957797153]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 3.0
+offset_top = 647.0
+offset_right = -45.0
+offset_bottom = 707.0
+grow_horizontal = 2
+text = "点击进入"
+horizontal_alignment = 1

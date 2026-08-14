@@ -1,0 +1,102 @@
+[gd_scene format=3 uid="uid://dnrylno3w4d26"]
+
+[ext_resource type="Script" uid="uid://ci8k71ryffcfx" path="res://scenes/ui/tips/Tips.gd" id="1_tips"]
+
+[node name="Tips" type="Control" unique_id=1787055187]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_tips")
+
+[node name="Backdrop" type="ColorRect" parent="." unique_id=1476553567]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="TipPanel" type="Control" parent="." unique_id=34924681]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -150.0
+offset_right = 250.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Fill" type="ColorRect" parent="TipPanel" unique_id=1767028618]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.045
+anchor_right = 1.052
+anchor_bottom = 1.0
+offset_right = 0.19998169
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.85)
+
+[node name="TitleBox" type="ColorRect" parent="TipPanel" unique_id=285148981]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 44.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="TitleLabel" type="Label" parent="TipPanel" unique_id=145515594]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 16.0
+offset_right = -16.0
+offset_bottom = 44.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+vertical_alignment = 1
+
+[node name="DescLabel" type="Label" parent="TipPanel" unique_id=429960005]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.07700001
+anchor_top = 0.17
+anchor_right = 0.96000004
+anchor_bottom = 0.83
+offset_left = 0.19999695
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+vertical_alignment = 1
+autowrap_mode = 3
+text_overrun_behavior = 3
+
+[node name="PageLabel" type="Label" parent="TipPanel" unique_id=1049408949]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -36.0
+offset_right = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 0.45)
+theme_override_font_sizes/font_size = 14
+text = "1 / 1"
+horizontal_alignment = 2

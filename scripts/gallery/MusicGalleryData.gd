@@ -36,6 +36,10 @@ const ENTRIES: Array[Dictionary] = [
 	{"id": "FalseDawn","title":"False Dawn","file":"res://assets/music/FalseDawn.ogg"},
 	{"id": "Eden","title":"Eden","file":"res://assets/music/Eden.ogg"},
 	{"id": "Where","title":"Where","file":"res://assets/music/Where.ogg"},
-	{"id": "Problem","title":"Problem","file":"res://assets/music/Problem.ogg"},
+	{"id": "EdenNormalVer","title":"Eden (Normal Ver.)","file":"res://assets/music/Eden_NormalVer.ogg"},
 	{"id": "RainingSeason","title":"Raining Season","file":"res://assets/music/RainingSeason.ogg"},
+	{"id": "Overnight","title":"Overnight","file":"res://assets/music/Overnight.ogg"},
+	{"id": "Overnight2","title":"Overnight 2","file":"res://assets/music/Overnight_2_.ogg"},
+	{"id": "HuolanMount","title":"Huolan Mount.","file":"res://assets/music/HuolanMount.ogg"},
+	{"id": "Library","title":"Library","file":"res://assets/music/Library.ogg"},
 ]

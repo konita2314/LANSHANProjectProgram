@@ -1,0 +1,181 @@
+[gd_scene format=3 uid="uid://bjgwrwfaehmue"]
+
+[ext_resource type="Script" uid="uid://c5pt2ytceybc3" path="res://scenes/game/vn/VNInterface.gd" id="1_vn"]
+[ext_resource type="Script" uid="uid://droxo7xjiw4la" path="res://scenes/game/vn/VNBackground.gd" id="2_bg"]
+
+[node name="VNInterface" type="Control" unique_id=713098155]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_vn")
+
+[node name="VNBackground" type="Control" parent="." unique_id=490738234]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_bg")
+
+[node name="GlitchOverlay" type="ColorRect" parent="." unique_id=1518366071]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0.1)
+
+[node name="CinematicTop" type="ColorRect" parent="." unique_id=1320545482]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 95.0
+grow_horizontal = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.8)
+
+[node name="CinematicBottom" type="ColorRect" parent="." unique_id=919851845]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.95
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="CharacterRect" type="TextureRect" parent="." unique_id=421823150]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.06
+anchor_top = 0.32
+anchor_right = 0.38
+anchor_bottom = 1.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="SpeakerNameContainer" type="Control" parent="." unique_id=1899536765]
+unique_name_in_owner = true
+anchors_preset = 0
+offset_left = 369.0
+offset_top = -129.0
+offset_right = 608.0
+offset_bottom = -51.0
+mouse_filter = 2
+
+[node name="SpeakerBg" type="ColorRect" parent="SpeakerNameContainer" unique_id=2006708599]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="SpeakerLeftBar" type="ColorRect" parent="SpeakerNameContainer" unique_id=1112785515]
+layout_mode = 0
+anchor_bottom = 1.0
+offset_right = 8.0
+
+[node name="SpeakerNameLabel" type="Label" parent="SpeakerNameContainer" unique_id=1857020800]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.29500002
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -0.010002136
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="DialogueBox" type="Panel" parent="." unique_id=881269388]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.284
+anchor_top = 0.65400004
+anchor_right = 0.998
+anchor_bottom = 0.89900005
+offset_left = 0.47998047
+offset_top = 0.1199646
+offset_right = 0.5599365
+offset_bottom = -0.2800293
+mouse_filter = 2
+
+[node name="DialogueText" type="RichTextLabel" parent="DialogueBox" unique_id=136464053]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.094000004
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -58.170006
+offset_top = 20.0
+offset_right = -39.0
+offset_bottom = -22.010803
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+bbcode_enabled = true
+scroll_active = false
+
+[node name="DialogueBottomBar" type="ColorRect" parent="DialogueBox" unique_id=194456111]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(0, 0, 0, 0.08)
+
+[node name="AboutLabel" type="Label" parent="DialogueBox" unique_id=31185915]
+visible = false
+layout_mode = 0
+offset_left = 465.0
+offset_top = -72.0
+offset_right = 886.0
+offset_bottom = 65.0
+
+[node name="ControlsHint" type="Control" parent="." unique_id=1458147974]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -480.0
+offset_top = -72.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="OverwriteModal" type="Control" parent="." unique_id=292458066]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

@@ -1,0 +1,93 @@
+[gd_scene format=3 uid="uid://chtc12psbajyp"]
+
+[ext_resource type="Script" uid="uid://k165lhwcpwa5" path="res://scenes/mainmenu/settings/SettingsScene.gd" id="1_settings"]
+
+[node name="SettingsScene" type="Control" unique_id=1009400325]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_settings")
+
+[node name="TitleLabel" type="Label" parent="." unique_id=1736448813]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 24.0
+offset_top = 16.0
+offset_right = 400.0
+offset_bottom = 88.0
+text = "Config"
+
+[node name="SplitRoot" type="Control" parent="." unique_id=868350445]
+layout_mode = 1
+anchor_left = 0.05
+anchor_top = 0.18
+anchor_right = 0.95
+anchor_bottom = 0.85
+
+[node name="Sidebar" type="Control" parent="SplitRoot" unique_id=572128693]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 340.0
+
+[node name="SidebarBg" type="ColorRect" parent="SplitRoot/Sidebar" unique_id=1109597006]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.45)
+
+[node name="SidebarList" type="VBoxContainer" parent="SplitRoot/Sidebar" unique_id=687988307]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 48.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ContentPanel" type="Control" parent="SplitRoot" unique_id=1383290162]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 340.0
+
+[node name="ContentBg" type="ColorRect" parent="SplitRoot/ContentPanel" unique_id=2131955213]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.3)
+
+[node name="ConfigsContainer" type="VBoxContainer" parent="SplitRoot/ContentPanel" unique_id=527444153]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = 32.0
+offset_right = -32.0
+offset_bottom = -32.0
+
+[node name="BackButton" type="Control" parent="." unique_id=809509651]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -96.0
+grow_horizontal = 2
+grow_vertical = 0

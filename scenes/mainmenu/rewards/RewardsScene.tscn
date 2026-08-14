@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://bpita6n0i3634"]
+
+[ext_resource type="Script" uid="uid://bs3xhb53yv1oo" path="res://scenes/mainmenu/rewards/RewardsScene.gd" id="1_achievements"]
+
+[node name="RewardsScene" type="Control" unique_id=2028902057]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_achievements")
+
+[node name="TitleLabel" type="Label" parent="." unique_id=1555646764]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 24.0
+offset_top = 16.0
+offset_right = 400.0
+offset_bottom = 88.0
+text = "Rewards"
+
+[node name="ItemsContainer" type="VBoxContainer" parent="." unique_id=1160825232]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.2
+anchor_right = 0.95
+anchor_bottom = 0.85

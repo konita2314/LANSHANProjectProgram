@@ -32,10 +32,10 @@ bus/master/bus_volume_db=0.0
 
 [autoload]
 
-EventBus="*res://scenes/autoload/EventBus.gd"
-GameManager="*res://scenes/autoload/GameManager.gd"
-AudioManager="*res://scenes/autoload/AudioManager.gd"
-VNAudioService="*res://scenes/autoload/VNAudioService.gd"
+EventBus="*res://scripts/autoload/EventBus.gd"
+GameManager="*res://scripts/autoload/GameManager.gd"
+AudioManager="*res://scripts/autoload/AudioManager.gd"
+VNAudioService="*res://scripts/autoload/VNAudioService.gd"
 
 [debug]
 

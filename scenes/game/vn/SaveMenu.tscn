@@ -1,0 +1,51 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/game/vn/SaveMenu.gd" id="1_save"]
+
+[node name="SaveMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("1_save")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.95)
+mouse_filter = 2
+
+[node name="TitleLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 40.0
+offset_right = 1216.0
+offset_bottom = 120.0
+text = "Archive"
+mouse_filter = 2
+
+[node name="CloseBtn" type="Button" parent="."]
+layout_mode = 1
+anchor_right = 1.0
+offset_left = -80.0
+offset_top = 56.0
+offset_right = -30.0
+offset_bottom = 96.0
+text = "×"
+flat = true
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchor_left = 0.05
+anchor_right = 0.95
+anchor_bottom = 1.0
+offset_top = 140.0
+offset_bottom = -100.0
+
+[node name="SlotsGrid" type="GridContainer" parent="Scroll"]
+layout_mode = 2
+columns = 2
+

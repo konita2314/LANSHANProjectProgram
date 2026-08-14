@@ -1,0 +1,136 @@
+[gd_scene format=3 uid="uid://2qud7uovua31"]
+
+[ext_resource type="Script" uid="uid://bbww70njnxiwu" path="res://scenes/game/operations/Notebook.gd" id="1_nb"]
+
+[node name="NotebookScene" type="Control" unique_id=546219749]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_nb")
+
+[node name="Notebook" type="Control" parent="." unique_id=180668669]
+layout_mode = 1
+anchor_left = 0.67
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Fill" type="Control" parent="Notebook" unique_id=1613742603]
+anchors_preset = 0
+offset_right = 431.39996
+offset_bottom = 719.0
+
+[node name="FillStroke" type="ColorRect" parent="Notebook/Fill" unique_id=1530461562]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.025
+anchor_top = 0.05
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1.0
+offset_top = -1.0
+offset_right = 1.0
+offset_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="FillMain" type="ColorRect" parent="Notebook/Fill" unique_id=379497464]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.025
+anchor_top = 0.05
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -13.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.95)
+
+[node name="NameLabel" type="Label" parent="Notebook" unique_id=676887565]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.027
+anchor_top = 0.07
+anchor_right = 0.95
+anchor_bottom = 0.16
+offset_left = -0.1949997
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 28
+text = "笔记本"
+
+[node name="Hint" type="Label" parent="Notebook" unique_id=1130543487]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.044000003
+anchor_top = 0.18100001
+anchor_right = 0.99300003
+anchor_bottom = 0.22800002
+offset_left = -0.18563652
+offset_top = -0.32000732
+offset_right = -0.04321289
+offset_bottom = -0.16000366
+
+[node name="WhatYouGet" type="Control" parent="Notebook" unique_id=1982635535]
+layout_mode = 1
+anchor_left = 0.062000003
+anchor_top = 0.279
+anchor_right = 1.0
+anchor_bottom = 0.82600003
+offset_left = 0.21116829
+offset_top = 0.11999512
+offset_bottom = 0.27996826
+
+[node name="Percent" type="Control" parent="Notebook" unique_id=1235209154]
+layout_mode = 1
+anchor_left = 0.027
+anchor_top = 0.22500001
+anchor_right = 1.024
+anchor_bottom = 0.28500003
+offset_left = -0.0048360825
+offset_right = -0.13763428
+offset_bottom = -0.2000122
+
+[node name="PercentBar" type="ColorRect" parent="Notebook/Percent" unique_id=1835484560]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.029000001
+anchor_top = 0.38500002
+anchor_right = 0.79300004
+anchor_bottom = 0.51900005
+offset_left = -0.2090187
+offset_top = 0.0009994507
+offset_right = 0.14694214
+offset_bottom = -0.010601044
+mouse_filter = 2
+
+[node name="Percentage" type="Label" parent="Notebook/Percent" unique_id=336527646]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.822
+anchor_top = 0.064
+anchor_right = 0.96900004
+anchor_bottom = 0.786
+offset_left = -0.0619812
+offset_top = 0.006396055
+offset_right = 0.05102539
+offset_bottom = 0.0035991669
+
+[node name="GotoNext" type="Label" parent="Notebook" unique_id=1982323078]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.105000004
+anchor_top = 0.84900004
+anchor_right = 1.0
+anchor_bottom = 0.929
+offset_left = 0.047958374
+offset_top = -0.2800293
+offset_right = 32.0
+offset_bottom = 0.11999512
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 28
+text = "推理"

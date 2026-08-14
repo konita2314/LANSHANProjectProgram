@@ -28,21 +28,21 @@ const NEW_GAME_SLIDE_DURATION: float = 1.35  # 3× normal slide — ceremonial f
 
 # 场景路径（首次访问时延迟加载）
 const SCENE_PATHS: Dictionary = {
-	Scene.SPLASH:       "res://scenes/menu/SplashScene.tscn",
-	Scene.TITLE:        "res://scenes/menu/MainMenu.tscn",
-	Scene.LOAD:         "res://scenes/save_load/LoadScene.tscn",
-	Scene.SETTINGS:     "res://scenes/settings/SettingsScene.tscn",
-	Scene.ABOUT:        "res://scenes/about/AboutScene.tscn",
-	Scene.REWARDS:      "res://scenes/achievements/RewardsScene.tscn",
-	Scene.REGISTRATION: "res://scenes/registration/RegistrationScene.tscn",
-	Scene.VN:           "res://scenes/vn/VNInterface.tscn",
-	Scene.MUSIC_GALLERY: "res://scenes/gallery/MusicGallery.tscn",
-	Scene.SCENE_GALLERY: "res://scenes/gallery/SceneGallery.tscn",
-	Scene.PICTURE_VIEWER: "res://scenes/gallery/PictureViewer.tscn",
-	Scene.MAP:            "res://scenes/map/Map.tscn",
-	Scene.CALENDAR:      "res://scenes/calendar/CalendarScene.tscn",
-	Scene.DATESWITCH:    "res://scenes/dateswitch/DateSwitch.tscn",
-	Scene.ACHIEVEMENT_LIST: "res://scenes/achievements/AchievementList.tscn",
+	Scene.SPLASH:       "res://scenes/mainmenu/SplashScene.tscn",
+	Scene.TITLE:        "res://scenes/mainmenu/MainMenu.tscn",
+	Scene.LOAD:         "res://scenes/mainmenu/save_load/LoadScene.tscn",
+	Scene.SETTINGS:     "res://scenes/mainmenu/settings/SettingsScene.tscn",
+	Scene.ABOUT:        "res://scenes/mainmenu/about/AboutScene.tscn",
+	Scene.REWARDS:      "res://scenes/mainmenu/rewards/RewardsScene.tscn",
+	Scene.REGISTRATION: "res://scenes/game/registration/RegistrationScene.tscn",
+	Scene.VN:           "res://scenes/game/vn/VNInterface.tscn",
+	Scene.MUSIC_GALLERY: "res://scenes/mainmenu/rewards/MusicGallery.tscn",
+	Scene.SCENE_GALLERY: "res://scenes/mainmenu/rewards/SceneGallery.tscn",
+	Scene.PICTURE_VIEWER: "res://scenes/mainmenu/rewards/PictureViewer.tscn",
+	Scene.MAP:            "res://scenes/game/map/Map.tscn",
+	Scene.CALENDAR:      "res://scenes/game/calendar/CalendarScene.tscn",
+	Scene.DATESWITCH:    "res://scenes/game/dateswitch/DateSwitch.tscn",
+	Scene.ACHIEVEMENT_LIST: "res://scenes/mainmenu/rewards/AchievementList.tscn",
 }
 
 # ---------------------------------------------------------------------------
@@ -125,7 +125,7 @@ func _ready() -> void:
 
 	# 教程提示弹窗 — CanvasLayer（layer 99），位于成就弹窗下方。
 	# 用于在游戏中显示多页教程/提示。
-	var tips_packed: PackedScene = load("res://scenes/tips/Tips.tscn") as PackedScene
+	var tips_packed: PackedScene = load("res://scenes/ui/tips/Tips.tscn") as PackedScene
 	if tips_packed:
 		var tips_layer := CanvasLayer.new()
 		tips_layer.name = "TipsLayer"
@@ -136,7 +136,7 @@ func _ready() -> void:
 
 	# 成就达成全局弹窗 — 顶层 CanvasLayer（layer 100），
 	# 出现在一切场景元素之上，不拦截其他场景的输入。
-	var toast_packed: PackedScene = load("res://scenes/achievements/AchievementReached.tscn") as PackedScene
+	var toast_packed: PackedScene = load("res://scenes/mainmenu/rewards/AchievementReached.tscn") as PackedScene
 	if toast_packed:
 		var toast_layer := CanvasLayer.new()
 		toast_layer.name = "AchievementToastLayer"
