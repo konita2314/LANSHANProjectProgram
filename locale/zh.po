@@ -102,6 +102,9 @@ msgstr "界面语言"
 msgid "显示模式"
 msgstr "显示模式"
 
+msgid "帧率"
+msgstr "帧率"
+
 msgid "着色器效果"
 msgstr "着色器效果"
 
@@ -135,6 +138,12 @@ msgstr "全屏"
 
 msgid "性能"
 msgstr "性能"
+
+msgid "垂直同步"
+msgstr "垂直同步"
+
+msgid "帧率无上限"
+msgstr "帧率无上限"
 
 # ---- Tab Menu ----
 msgid "物品"

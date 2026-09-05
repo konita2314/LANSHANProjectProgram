@@ -104,6 +104,7 @@ func _ready() -> void:
 	_load_persist_vars()
 	_start_bg_rotation()
 	_apply_locale()
+	_apply_framerate()
 
 
 # ===================================================================
@@ -174,6 +175,9 @@ func set_setting(key: String, value: Variant) -> void:
 			_settings.quality = value
 		"display_mode":
 			_settings.display_mode = value
+		"framerate":
+			_settings.framerate = value
+			_apply_framerate()
 	_save_settings()
 	EventBus.settings_changed.emit(key, value)
 
@@ -187,7 +191,7 @@ func _load_settings() -> void:
 	_settings = AppSettings.new().get_default()
 	var config := ConfigFile.new()
 	if config.load(SETTINGS_PATH) == OK:
-		for key in ["language", "text_speed", "master_volume", "bgm_volume", "sfx_volume", "ambience_volume", "auto_play", "quality", "display_mode"]:
+		for key in ["language", "text_speed", "master_volume", "bgm_volume", "sfx_volume", "ambience_volume", "auto_play", "quality", "display_mode", "framerate"]:
 			if config.has_section_key("settings", key):
 				_settings.set(key, config.get_value("settings", key))
 
@@ -216,9 +220,40 @@ func _save_settings() -> void:
 	config.set_value("settings", "auto_play", _settings.auto_play)
 	config.set_value("settings", "quality", _settings.quality)
 	config.set_value("settings", "display_mode", _settings.display_mode)
+	config.set_value("settings", "framerate", _settings.framerate)
 	var err: int = config.save(SETTINGS_PATH)
 	if err != OK:
 		push_error("GameManager: Failed to save settings — ", SETTINGS_PATH, " (error ", err, ")")
+
+
+# ── 帧率设置 ─────────────────────────────────────────────
+
+## 帧率档位 → Engine.max_fps 数值（"vsync"/"unlimited" 特殊处理，不进映射）。
+const FRAMERATE_LIMITS: Dictionary = {
+	"fps30": 30,
+	"fps60": 60,
+	"fps120": 120,
+	"fps240": 240,
+}
+
+
+## 应用帧率设置（启动时与设置变更时调用）。
+## "vsync"：开启垂直同步且 max_fps 不设限 — 引擎自动跟随显示器刷新率，
+## 当前实际帧率即显示器最高刷新率（"当前最高帧率即目前显示器的最高帧率"）。
+## "unlimited"：关闭垂直同步且 max_fps 不设限。
+## 其余档位：关闭垂直同步，Engine.max_fps 钳制到对应数值。
+func _apply_framerate() -> void:
+	match _settings.framerate:
+		"vsync":
+			Engine.max_fps = 0
+			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED)
+		"unlimited":
+			Engine.max_fps = 0
+			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
+		_:
+			var limit: int = int(FRAMERATE_LIMITS.get(_settings.framerate, 0))
+			Engine.max_fps = limit
+			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 
 
 # --- 存档 / 读档 ---

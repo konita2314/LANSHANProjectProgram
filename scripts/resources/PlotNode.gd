@@ -66,19 +66,8 @@ class_name PlotNode extends Resource
 ## BGM 仅淡出标志 — 淡出 BGM 而不启动新曲目（秒）
 @export var fade_out_bgm: float = 0.0
 
-## 无需选择提示自动跳转到另一个剧情。
-## 设置后，VN 将在当前节点之后过渡到此剧情。
-@export var jump_plot_id: String = ""
-@export var jump_node_index: int = 0
-
-## @jump scene:CALENDAR 11-1 的日期参数（"11-1" 格式），空字符串表示无日期
-@export var jump_date: String = ""
-
 ## 淡入黑屏：持续时间（秒）（>0 触发淡入黑屏覆盖动画）。
 @export var fade_black: float = 0.0
-
-## 返回标题 — 发出 back_requested 信号返回到主菜单。
-@export var back_to_title: bool = false
 
 ## 重新选择 — 当为 true 时，跳回最近的选择节点
 ## 并让玩家重新选择。由 @rechoose 命令使用。
@@ -86,6 +75,12 @@ class_name PlotNode extends Resource
 
 ## 支线故事结束 — 发出 back_requested 信号返回上一级菜单。由 @end 命令设置。
 @export var end_story: bool = false
+
+## 段落结束请求包 — 由 @return / @title 解析产生，
+## 段落收尾时经 VNInterface.return_request() 打包发给 FlowManager 分派。
+## 形如 {"type": "load_plot", "plot_id": "chapter1", "node_index": 0}；
+## 空字典表示本节点不是请求节点。
+@export var request: Dictionary = {}
 
 # ── V2 流程控制字段 ──
 

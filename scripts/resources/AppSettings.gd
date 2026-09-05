@@ -11,6 +11,7 @@ class_name AppSettings extends Resource
 @export var auto_play: bool = false
 @export var quality: String = "high"
 @export var display_mode: String = "windowed"
+@export var framerate: String = "vsync"
 
 
 ## 用 key 字符串读取设置值（供数据驱动的 SettingsScene 使用）。
@@ -25,6 +26,7 @@ func get_prop(key: String) -> Variant:
 		"auto_play": return auto_play
 		"quality": return quality
 		"display_mode": return display_mode
+		"framerate": return framerate
 	return null
 
 
@@ -39,4 +41,5 @@ func get_default() -> AppSettings:
 	settings.auto_play = false
 	settings.quality = "high"
 	settings.display_mode = "windowed"
+	settings.framerate = "vsync"
 	return settings

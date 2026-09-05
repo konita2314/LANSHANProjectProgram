@@ -8,6 +8,7 @@
 ##   @set var op expr — 存档作用域变量赋值
 ##   @persist var op expr — 持久化作用域变量赋值
 ##   @if / @else / @endif — 条件分支（支持嵌套）
+##   @return — 段落结束请求（提交给 FlowManager 分派，不再自行跳转）
 ##   行号错误定位
 ##   选项 actions 表达式
 class_name ScriptParser extends RefCounted
@@ -269,17 +270,24 @@ func _parse_directive(line: String, line_no: int = 0) -> PlotNode:
 		"stop":         node.stop_transition = true
 		"black":
 			node.fade_black = args[0].to_float() if args.size() > 0 and args[0].is_valid_float() else 1.0
-		"jump":
-			if args.size() > 0:
-				var target: String = args[0]
-				if target.begins_with("scene:"):
-					node.next_scene = target.trim_prefix("scene:").to_upper()
-					# @jump scene:CALENDAR 11-1 — 携带日期参数
-					if args.size() > 1:
-						node.jump_date = args[1]
-				else:
-					node.jump_plot_id = target
-					node.jump_node_index = 0
+		"return":
+			# @return chapter1 / @return chapter3, 0 / @return scene:MAP — 段落结束请求，
+			# 不执行跳转；收尾时由 return_request() 打包发给 FlowManager 分派。
+			if args.is_empty():
+				push_error("ScriptParser: @return missing argument (line ", line_no, ")")
+				return null
+			var return_target: String = args[0]
+			if return_target.begins_with("scene:"):
+				node.request = {
+					"type": "goto_scene",
+					"scene": return_target.trim_prefix("scene:").to_upper(),
+				}
+			else:
+				node.request = {
+					"type": "load_plot",
+					"plot_id": return_target,
+					"node_index": args[1].to_int() if args.size() > 1 and args[1].is_valid_int() else 0,
+				}
 		"settime":
 			if args.size() > 0:
 				node.expression = args[0]   # "11-1"
@@ -301,7 +309,9 @@ func _parse_directive(line: String, line_no: int = 0) -> PlotNode:
 		"locate":
 			if args.size() > 0:
 				node.location = args[0]
-		"title":        node.back_to_title = true
+		"title":
+			# 段落结束请求 — 返回标题（FlowManager 分派）
+			node.request = {"type": "back_to_title"}
 		"rechoose":     node.rechoose = true
 		"end":          node.end_story = true
 		_:
@@ -485,6 +495,11 @@ func _parse_reaction_lines(rlines: Array[String], cond_stack: Array[Dictionary])
 				if cmd in FLOW_COMMANDS:
 					var raw_args: String = cmd_match.get_string(2).strip_edges()
 					_parse_flow_directive(cmd, raw_args, nodes, cond_stack, line_no)
+					continue
+				# 段落收尾指令不允许出现在反应块中 — 反应节点不经过 _advance，
+				# 请求会被静默丢弃，作者意图完全落空
+				if cmd in ["return", "title", "end"]:
+					push_error("ScriptParser: 指令 @", cmd, " 不允许出现在反应块中 (line ", line_no, ")")
 					continue
 			var node: PlotNode = _parse_directive(line, line_no)
 			if node: nodes.append(node)

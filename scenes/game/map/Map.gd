@@ -828,7 +828,7 @@ func _play_click() -> void:
 
 
 ## 控制场景是否可通过 ESC / BackBar 返回上一级。
-## 当 @jump scene:MAP 直接从剧本跳转且无法返回时，设为 false。
+## 当 @return scene:MAP 经 FlowManager 直接从剧本跳转且无法返回时，设为 false。
 func set_can_go_back(can: bool) -> void:
 	_can_go_back = can
 	if _back_bar:

@@ -184,6 +184,8 @@ func _get_scene(target: Scene) -> Control:
 		instance.gallery_requested.connect(_on_rewards_gallery_requested)
 	if instance.has_signal("picture_requested"):
 		instance.picture_requested.connect(_on_scene_gallery_picture_requested)
+	if instance.has_signal("flow_return"):
+		instance.flow_return.connect(FlowManager._on_flow_return.bind(instance))
 
 	_scene_instances[target] = instance
 	return instance

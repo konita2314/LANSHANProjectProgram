@@ -75,6 +75,11 @@ func _build_categories() -> void:
 					"setting_key": "quality",
 					"options": ["low", "high"],
 					"option_labels": {"low": "开启", "high": "关闭"}},
+				{"id": "framerate", "zh": tr("帧率"), "is_slider": false,
+					"setting_key": "framerate",
+					"options": ["fps30", "fps60", "fps120", "fps240", "vsync", "unlimited"],
+					"option_labels": {"fps30": "30 FPS", "fps60": "60 FPS", "fps120": "120 FPS",
+						"fps240": "240 FPS", "vsync": "垂直同步", "unlimited": "帧率无上限"}},
 			]
 		},
 	]

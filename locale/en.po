@@ -102,6 +102,9 @@ msgstr "LANGUAGE"
 msgid "显示模式"
 msgstr "DISPLAY"
 
+msgid "帧率"
+msgstr "FRAME RATE"
+
 msgid "着色器效果"
 msgstr "SHADERS"
 
@@ -135,6 +138,12 @@ msgstr "Fullscreen"
 
 msgid "性能"
 msgstr "Low"
+
+msgid "垂直同步"
+msgstr "V-Sync"
+
+msgid "帧率无上限"
+msgstr "Unlimited"
 
 # ---- Tab Menu ----
 msgid "物品"

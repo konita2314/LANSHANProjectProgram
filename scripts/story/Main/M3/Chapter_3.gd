@@ -726,5 +726,5 @@ const TEXT: String = """:: title 第三章：月考前后
 @stop
 @bgm fadeout
 @black 1.0
-@jump chapter4, 0
+@return chapter4, 0
 """

@@ -311,5 +311,5 @@ const TEXT: String = """
 
 @bgm fadeout
 @black 1.0
-@jump chapter2
+@return chapter2
 """

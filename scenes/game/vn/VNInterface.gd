@@ -1,7 +1,7 @@
 ## VNInterface : Control
 ## 核心视觉小说游戏场景 — 背景、角色、对话、打字机效果。
 ## 子场景（TabMenu、SaveMenu、ChoicesMenu、LoadingScreen）是独立的。
-extends Control
+class_name VNInterface extends Control
 
 # 主线剧情文本 — 从 scripts/story/ 子目录预加载。
 const STORY_TEXTS: Dictionary = {
@@ -30,6 +30,9 @@ const MINI_STORIES: Dictionary = {
 
 signal back_requested()
 signal scene_changed(new_scene: String)
+## 段落收尾信号 — 把本段收集到的请求包发给 FlowManager 分派。
+## 包格式：{"requests": [...], "from_plot": ..., "node_index": ...}
+signal flow_return(request: Dictionary)
 
 # ---------------------------------------------------------------------------
 # 状态
@@ -122,6 +125,9 @@ var _log_entries: Array[Dictionary] = []
 var _reaction_queue: Array[PlotNode] = []
 var _pending_target: Dictionary = {}   # {type: "continue"|"jump"|"rechoose", plot_id, node_idx}
 
+# 段落结束请求 — 本段执行期间收集的 FlowManager 请求（@return/@title 产生）
+var _flow_requests: Array[Dictionary] = []
+
 # V2 运行时变量上下文
 var _context: ScriptContext = null
 
@@ -188,6 +194,7 @@ func _init_vn_core(player_name: String) -> void:
 	_char_rect.modulate.a = 1.0; _char_rect.position.x = 0.0
 	_log_entries.clear()
 	_reaction_queue.clear(); _pending_target.clear()
+	_flow_requests.clear()
 	_context = ScriptContext.new()
 	GameManager.script_context = _context
 	_context.persist_var_set = GameManager._on_persist_var_set
@@ -443,7 +450,7 @@ func _load_plot_internal(plot_id: String, _start_node_index: int) -> bool:
 
 	var parser: ScriptParser = ScriptParser.new(plot_id)
 	_plot = parser.parse(text)
-	# 防失误：STORY_TEXTS key 必须与脚本内 :: id 一致，否则 @jump 找错文件
+	# 防失误：STORY_TEXTS key 必须与脚本内 :: id 一致，否则 @return 找错文件
 	if _plot.id != "" and _plot.id != plot_id:
 		push_error("VNInterface: :: id mismatch — STORY_TEXTS key '", plot_id,
 			"' vs parsed '", _plot.id, "'. Fix Story_*.gd or STORY_TEXTS.")
@@ -488,7 +495,7 @@ func _set_current_node(idx: int) -> void:
 			"en": _current_node.EN,
 		})
 
-	# 自动推进纯过渡节点（stop / black / jump 链）
+	# 自动推进纯过渡节点（stop / black 链）
 	if not _exit_tree_called:
 		_check_auto_advance()
 
@@ -575,9 +582,6 @@ func _apply_audio_effects() -> void:
 func _apply_terminal_and_scene() -> void:
 
 	if _current_node.type == "scene" and not _current_node.next_scene.is_empty():
-		# @jump scene:CALENDAR 11-1 — 先把日期写入，再跳转
-		if not _current_node.jump_date.is_empty():
-			_apply_settime(_current_node.jump_date)
 		# @settime / @timeset / @sidesettime / @sidetimeset
 		var target_scene: String = _current_node.next_scene
 		if target_scene == "DATESWITCH":
@@ -595,15 +599,15 @@ func _apply_terminal_and_scene() -> void:
 				else:
 					_context.apply_expression("__temp_st_target_month = " + parts[0], false)
 					_context.apply_expression("__temp_st_target_day = " + parts[1], false)
-			# 提前越过 @settime 及紧接的纯场景节点，返回时直接面对 @jump
+			# 提前越过 @settime 及紧接的纯场景节点，返回时直接面对 @return
 			if _plot and _node_index < _plot.nodes.size() - 1:
 				_node_index += 1
 				while _node_index < _plot.nodes.size():
 					var ahead: PlotNode = _plot.nodes[_node_index]
 					var at: String = ahead.EN if not _is_zh() and not ahead.EN.is_empty() else ahead.ZH
 					if not at.is_empty() or ahead.type == "select": break
-					if ahead.stop_transition or ahead.fade_black > 0.0 or not ahead.jump_plot_id.is_empty(): break
-					if ahead.back_to_title or ahead.rechoose or ahead.end_story: break
+					if ahead.stop_transition or ahead.fade_black > 0.0 or not ahead.request.is_empty(): break
+					if ahead.rechoose or ahead.end_story: break
 					if ahead.type in ["label", "goto", "set", "persist", "if", "else", "endif"]: break
 					if ahead.type == "scene" and not ahead.next_scene.is_empty(): break
 					_node_index += 1
@@ -1146,21 +1150,18 @@ func _advance() -> void:
 
 	_play_click()
 
-	# 如果此节点触发返回标题或支线结束
-	if _current_node.back_to_title:
-		back_requested.emit()
+	# 段落结束请求 — 收集并交给 FlowManager 分派
+	if not _current_node.request.is_empty():
+		_flow_requests.append(_current_node.request)
+		return_request()
 		return
+
+	# 支线结束（@end）
 	if _current_node.end_story:
 		if _in_sidestory:
 			_restore_main_story()
 		else:
 			back_requested.emit()
-		return
-
-	# 如果此节点有跳转目标，自动跳转到另一个剧情
-	# 委托给电影式章节过渡协程
-	if not _current_node.jump_plot_id.is_empty():
-		_execute_chapter_transition()
 		return
 
 	# 重新选择 — 回退到最近的选择
@@ -1182,8 +1183,12 @@ func _advance() -> void:
 		if _in_sidestory:
 			_restore_main_story()
 		else:
+			# 主线无请求结尾不允许静默回标题 — 报错停摆，停在当前界面
+			if _flow_requests.is_empty():
+				push_error("VNInterface: 主线剧本 '", _plot_id, "' 结束但未产生任何 return 请求，已中断执行")
+				return
 			VNAudioService.clear_all_ambience(0.5)
-			back_requested.emit()
+			return_request()
 
 
 ## V2 流程控制 — while 循环连续执行无 UI 的控制节点
@@ -1292,15 +1297,15 @@ func _execute_flow_control() -> bool:
 
 
 ## 跳过连续的纯场景节点（@bg, @bgm, @chapter 等无文本、无特殊效果的节点），
-## 直到遇到有文本的节点或特殊过渡节点（stop/black/jump）。
+## 直到遇到有文本的节点或特殊过渡节点（stop/black）。
 func _skip_plain_scenes() -> void:
 	if _is_auto_advancing: return
 	var safety: int = 0
 	while _current_node and _get_localized_text().is_empty() and _current_node.type != "select" and safety < 100:
 		# 特殊节点——不跳过
-		if _current_node.stop_transition or _current_node.fade_black > 0.0 or not _current_node.jump_plot_id.is_empty() or _current_node.wait_time > 0.0:
+		if _current_node.stop_transition or _current_node.fade_black > 0.0 or not _current_node.request.is_empty() or _current_node.wait_time > 0.0:
 			return
-		if _current_node.back_to_title or _current_node.rechoose or _current_node.end_story:
+		if _current_node.rechoose or _current_node.end_story:
 			return
 		# V2 流程控制节点 — 不跳过
 		if _current_node.type in ["label", "goto", "set", "persist", "if", "else", "endif"]:
@@ -2072,19 +2077,18 @@ func _check_auto_advance() -> void:
 	if not _current_node: return
 	if not _get_localized_text().is_empty(): return
 	if _current_node.type == "select": return
-	if _current_node.back_to_title: return
+	if _current_node.request.get("type", "") == "back_to_title": return
 
 	# V2 流程控制节点 — 立即执行，无需动画
 	if _current_node.type in ["label", "goto", "set", "persist", "if", "else", "endif"]:
 		_advance()
 		return
 
-	# 仅对特殊过渡节点触发（stop/black/jump），不包括纯场景节点
+	# 仅对特殊过渡节点触发（stop/black/request），不包括纯场景节点
 	var is_transition: bool = (
 		_current_node.stop_transition or
 		_current_node.fade_black > 0.0 or
-		not _current_node.jump_plot_id.is_empty() or
-		_current_node.back_to_title or
+		not _current_node.request.is_empty() or
 		_current_node.end_story or
 		_current_node.rechoose
 	)
@@ -2125,10 +2129,12 @@ func _auto_advance_chain() -> void:
 		_is_auto_advancing = false
 		return
 
-	# ── 阶段 3：跳转节点 → 电影式章节过渡 ──
-	if not _current_node.jump_plot_id.is_empty():
+	# ── 阶段 3：段落结束请求 → 收尾提交 FlowManager ──
+	if not _current_node.request.is_empty():
 		_is_auto_advancing = false
-		await _execute_chapter_transition()
+		# 直接收尾提交，不经 _advance 的打字机门槛（电影式过渡自动触发）
+		_flow_requests.append(_current_node.request)
+		return_request()
 		return
 
 	# ── 阶段 4：通用场景节点（无对话，无跳转）──
@@ -2183,7 +2189,7 @@ func _advance_to_first_text() -> void:
 			return
 		# 有文本或特殊节点时停止
 		var text: String = node.EN if not _is_zh() and not node.EN.is_empty() else node.ZH
-		if not text.is_empty() or node.stop_transition or node.fade_black > 0.0 or not node.jump_plot_id.is_empty() or node.wait_time > 0.0:
+		if not text.is_empty() or node.stop_transition or node.fade_black > 0.0 or not node.request.is_empty() or node.wait_time > 0.0:
 			_current_node = node
 			# 预填充文本但不显示
 			text = _apply_text_styling(text)
@@ -2236,7 +2242,7 @@ func _apply_audio_bgm(c: AudioCommand) -> void:
 ##
 ## 加上前面 @black 节点的 1.0 秒淡入黑屏，
 ## 总过渡时间约为 2.0 秒。
-func _execute_chapter_transition() -> void:
+func _execute_chapter_transition_to(new_plot_id: String, new_node_index: int) -> void:
 	_play_click()
 	_is_auto_advancing = true
 
@@ -2259,9 +2265,7 @@ func _execute_chapter_transition() -> void:
 	_controls_hint.modulate.a = 0.0
 	_controls_hint.visible = false
 
-	# 3. 在黑屏后面静默加载新剧情
-	var new_plot_id: String = _current_node.jump_plot_id
-	var new_node_index: int = _current_node.jump_node_index
+	# 3. 在黑屏后面静默加载新剧情（目标由调用方传入：FlowManager 分派）
 	_load_plot_silent(new_plot_id, new_node_index)
 
 	# 4. 在黑屏后静默跳到第一个有文本的节点，不触发显示
@@ -2293,6 +2297,25 @@ func _execute_chapter_transition() -> void:
 	await ui_tween.finished
 	_is_auto_advancing = false
 
+
+## 段落收尾 — 把本段执行期间收集到的请求打包发给 FlowManager 分派。
+## 本函数不执行任何跳转；后续走向由 FlowManager 决定并执行。
+func return_request() -> void:
+	if _flow_requests.is_empty():
+		push_warning("VNInterface: return_request() 但请求列表为空，忽略")
+		return
+	var package: Dictionary = {
+		"requests": _flow_requests.duplicate(),
+		"from_plot": _plot_id,
+		"node_index": _node_index,
+	}
+	_flow_requests.clear()
+	flow_return.emit(package)
+
+
+## FlowManager 回调 — 执行电影式章节过渡加载目标剧情。
+func execute_flow_load(plot_id: String, node_index: int) -> void:
+	_execute_chapter_transition_to(plot_id, node_index)
 
 
 # ===================================================================

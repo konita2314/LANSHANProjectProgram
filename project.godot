@@ -36,6 +36,7 @@ EventBus="*res://scripts/autoload/EventBus.gd"
 GameManager="*res://scripts/autoload/GameManager.gd"
 AudioManager="*res://scripts/autoload/AudioManager.gd"
 VNAudioService="*res://scripts/autoload/VNAudioService.gd"
+FlowManager="*res://scripts/autoload/FlowManager.gd"
 
 [debug]
 
@@ -136,6 +137,7 @@ vn_log={
 
 [internationalization]
 
+locale/translations=PackedStringArray("res://locale/zh.po", "res://locale/en.po")
 locale/locale="en"
 
 [meow_mcp]
