@@ -1,4 +1,9 @@
 ## QuitModal — 自包含场景。发出 confirmed() 或 cancelled() 信号。
+## 选项行本体为 scenes/ui/OptionRow 统一组件（与 MainMenuList / TabMenu 同风格：
+## sweep 扫白 + 位移 + 调暗 + 颜色瞬时覆盖，焦点先杀后建无半程残留），
+## 本类仅编排 Modal 外壳（横条/品牌框/问题文本）与 OptionRow 的入场节奏。
+## 入场照 MainMenuList：行从右侧屏外错峰滑入静止位，入场结束后才应用焦点
+## （入场与焦点 tween 均写行属性，串行执行避免争抢）。
 ## 符合 CLAUDE.md 规范：无 lambda，严格类型，@onready 已类型化。
 class_name QuitModal
 extends Control
@@ -16,33 +21,22 @@ const OPTION_DATA: Array[Dictionary] = [
 	{ "en": "YES", "zh": "是" },
 	{ "en": "NO",  "zh": "否" },
 ]
-const ROW_HEIGHT: float = 56.0
-const FOCUS_WIDTH_MULTIPLIER: float = 1.2
-const FOCUS_OFFSET_X: float = -30.0
-const UNFOCUSED_MODULATE: float = 0.4
-const FOCUS_DURATION: float = 0.2
-const SPACER_WIDTH: float = 150.0
-const EN_FONT_SIZE: int = 36
-const ROW_BG_COLOR: Color = Color(0, 0, 0, 0.2)
-const ROW_BORDER_COLOR: Color = Color(1, 1, 1, 0.2)
+
+# 选项行入场节奏（行样式数值见 OptionRow）
+const INTRO_STAGGER: float = 0.08
+const OPTION_BASE_DELAY: float = 0.5
+
+# 品牌/问题/整场节奏
 const ZH_TITLE_FIRST_SIZE: int = 28
 const ZH_TITLE_SIZE_CYCLE: Array[int] = [20, 18]
 const ZH_TITLE_COLOR: Color = Color.BLACK
-const ZH_ROW_FIRST_SIZE: int = 24
-const ZH_ROW_SIZE_CYCLE: Array[int] = [20, 18, 16, 18]
-const ZH_ROW_COLOR: Color = Color(1, 1, 1, 0.8)
 const DIM_FADE_DURATION: float = 0.35
 const BAND_SCALE_DURATION: float = 0.45
 const BRAND_SLIDE_DELAY: float = 0.3
 const BRAND_SLIDE_DURATION: float = 0.5
 const QUESTION_SLIDE_DELAY: float = 0.4
 const QUESTION_SLIDE_DURATION: float = 0.5
-const OPTION_BASE_DELAY: float = 0.5
-const OPTION_STAGGER: float = 0.1
-const OPTION_ENTRANCE_DURATION: float = 0.5
 const ENTRANCE_SLIDE_X: float = 50.0
-const OPTION_INTRO_X: float = 100.0
-const FOCUS_APPLY_DELAY: float = 0.6
 const EXIT_DIM_DURATION: float = 0.25
 const EXIT_BAND_DURATION: float = 0.25
 const EXIT_FADE_DURATION: float = 0.2
@@ -53,14 +47,6 @@ const EXIT_FADE_DURATION: float = 0.2
 var _selection: MenuSelection = MenuSelection.new(OPTION_DATA.size(), false, 1)
 var _rows: Array[OptionRow] = []
 var _interactive: bool = false
-var _focus_tween: Tween = null
-
-## 选项行类型化引用（取代 set_meta/get_meta）。
-class OptionRow:
-	var root: Control = null
-	var sweep: ColorRect = null
-	var en_label: Label = null
-	var subtitle_label: SubtitleLabel = null
 
 # ── Onready ────────────────────────────────────────────
 
@@ -111,7 +97,10 @@ func _setup_ui() -> void:
 func _play_entrance() -> void:
 	_set_entrance_initial_states()
 	_play_entrance_tweens()
-	_schedule_focus_and_enable()
+	# 等待选项入场完成后再应用焦点（入场与焦点 tween 均写行属性，串行避免争抢）
+	await _play_option_intro()
+	_apply_focus()
+	_enable_interaction()
 
 
 func _set_entrance_initial_states() -> void:
@@ -142,23 +131,14 @@ func _play_entrance_tweens() -> void:
 	question_tween.tween_property(_question, "position:x", _question.position.x - ENTRANCE_SLIDE_X, QUESTION_SLIDE_DURATION).set_delay(QUESTION_SLIDE_DELAY)
 	question_tween.tween_property(_question, "modulate:a", 1.0, QUESTION_SLIDE_DURATION).set_delay(QUESTION_SLIDE_DELAY)
 
-	# Options stagger-in (web: delay 0.5 + i*0.1, 0.5s)
+
+## 选项错峰入场（OptionRow.play_intro）：淡入先于滑动完成，等待最后一行完成。
+func _play_option_intro() -> void:
+	var last_tween: Tween = null
 	for i: int in range(_rows.size()):
-		var row: OptionRow = _rows[i]
-		row.root.modulate.a = 0.0
-		row.root.position.x = OPTION_INTRO_X
-		var delay: float = OPTION_BASE_DELAY + i * OPTION_STAGGER
-		var row_tween: Tween = create_tween().set_parallel(true)
-		row_tween.set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
-		row_tween.tween_property(row.root, "position:x", 0.0, OPTION_ENTRANCE_DURATION).set_delay(delay)
-		row_tween.tween_property(row.root, "modulate:a", 1.0, OPTION_ENTRANCE_DURATION).set_delay(delay)
-
-
-## 入场结束后延迟应用初始焦点高亮，再开放交互。
-func _schedule_focus_and_enable() -> void:
-	var final_tween: Tween = create_tween()
-	final_tween.tween_callback(_apply_focus).set_delay(FOCUS_APPLY_DELAY)
-	final_tween.tween_callback(_enable_interaction)
+		last_tween = _rows[i].play_intro(OPTION_BASE_DELAY + i * INTRO_STAGGER)
+	if last_tween:
+		await last_tween.finished
 
 
 func _enable_interaction() -> void:
@@ -169,6 +149,7 @@ func _enable_interaction() -> void:
 
 func _play_exit(on_done: Callable) -> void:
 	_interactive = false
+	_kill_focus_anims()
 	var tween := create_tween().set_parallel(true)
 	tween.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
 	tween.tween_property(_dim_bg, "modulate:a", 0.0, EXIT_DIM_DURATION)
@@ -176,7 +157,7 @@ func _play_exit(on_done: Callable) -> void:
 	tween.tween_property(_brand_box, "modulate:a", 0.0, EXIT_FADE_DURATION)
 	tween.tween_property(_question, "modulate:a", 0.0, EXIT_FADE_DURATION)
 	for row: OptionRow in _rows:
-		tween.tween_property(row.root, "modulate:a", 0.0, EXIT_FADE_DURATION)
+		tween.tween_property(row, "modulate:a", 0.0, EXIT_FADE_DURATION)
 	tween.tween_callback(on_done)
 
 
@@ -189,162 +170,37 @@ func _build_options() -> void:
 		var en_text: String = option_def["en"]
 		var zh_text: String = "" if not show_zh else tr(option_def["zh"])
 		var row: OptionRow = _create_option_row(i, en_text, zh_text)
-		row.root.mouse_entered.connect(_on_hover.bind(i))
-		row.root.gui_input.connect(_on_click.bind(i))
-		_opts_anchor.add_child(row.root)
+		row.hovered.connect(_on_hover)
+		row.activated.connect(_on_activated)
+		_opts_anchor.add_child(row)
 		_rows.append(row)
 
 
 func _create_option_row(index: int, en_text: String, zh_text: String) -> OptionRow:
-	var row: OptionRow = OptionRow.new()
-	row.root = Control.new()
-	row.root.name = "Opt_" + str(index)
-	row.root.custom_minimum_size = Vector2(0, ROW_HEIGHT)
-	row.root.mouse_filter = Control.MOUSE_FILTER_STOP
-	row.root.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	row.root.offset_top = index * ROW_HEIGHT
-	row.root.offset_bottom = (index + 1) * ROW_HEIGHT
-
-	var bar: Control = _create_bar(row.root)
-	row.sweep = bar.get_node("Sweep") as ColorRect
-	var content_row: HBoxContainer = _create_content_row(bar, en_text, zh_text)
-	row.en_label = content_row.get_node("EnLabel") as Label
-	row.subtitle_label = content_row.get_node("ZhSubtitle") as SubtitleLabel
+	var row := OptionRow.new()
+	row.setup(index, en_text, zh_text, GameManager.font_tcm, GameManager.font_zh_title)
+	# 容器布局：锚定 OptionsAnchor 全宽、逐行堆叠
+	row.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	row.offset_top = index * OptionRow.ROW_HEIGHT
+	row.offset_bottom = (index + 1) * OptionRow.ROW_HEIGHT
 	return row
-
-
-## Bar 容器（clip + 深色底 + 上下边框 + 白色扫入），返回 bar。
-func _create_bar(parent: Control) -> Control:
-	var bar: Control = Control.new()
-	bar.name = "Bar"
-	@warning_ignore("int_as_enum_without_cast", "int_as_enum_without_match")
-	bar.layout_mode = 1  # LAYOUT_MODE_ANCHORS
-	bar.anchor_right = 1.0
-	bar.anchor_bottom = 1.0
-	bar.clip_contents = true
-	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	parent.add_child(bar)
-
-	# Dark bg (web: bg-black/20)
-	var row_bg: ColorRect = ColorRect.new()
-	@warning_ignore("int_as_enum_without_cast", "int_as_enum_without_match")
-	row_bg.layout_mode = 1  # LAYOUT_MODE_ANCHORS
-	row_bg.color = ROW_BG_COLOR
-	row_bg.anchor_right = 1.0
-	row_bg.anchor_bottom = 1.0
-	row_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.add_child(row_bg)
-
-	# Top border (web: border-y border-white/20)
-	var border_top: ColorRect = ColorRect.new()
-	@warning_ignore("int_as_enum_without_cast", "int_as_enum_without_match")
-	border_top.layout_mode = 1  # LAYOUT_MODE_ANCHORS
-	border_top.color = ROW_BORDER_COLOR
-	border_top.anchor_right = 1.0
-	border_top.offset_bottom = 1.0
-	border_top.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.add_child(border_top)
-
-	# Bottom border
-	var border_bottom: ColorRect = ColorRect.new()
-	@warning_ignore("int_as_enum_without_cast", "int_as_enum_without_match")
-	border_bottom.layout_mode = 1  # LAYOUT_MODE_ANCHORS
-	border_bottom.color = ROW_BORDER_COLOR
-	border_bottom.anchor_right = 1.0
-	border_bottom.anchor_top = 1.0
-	border_bottom.anchor_bottom = 1.0
-	border_bottom.offset_top = -1.0
-	border_bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.add_child(border_bottom)
-
-	# White sweep (web: bg-white sweep from left, scaleX)
-	var sweep: ColorRect = ColorRect.new()
-	sweep.name = "Sweep"
-	sweep.color = Color.WHITE
-	sweep.set_anchors_preset(Control.PRESET_FULL_RECT)
-	sweep.pivot_offset = Vector2(0, 0)
-	sweep.scale.x = 0.0
-	sweep.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.add_child(sweep)
-
-	return bar
-
-
-## 内容行：EN 标题 + 中文书法副标题 + 右侧间隔器，返回 content_row。
-func _create_content_row(parent: Control, en_text: String, zh_text: String) -> HBoxContainer:
-	var content_row: HBoxContainer = HBoxContainer.new()
-	@warning_ignore("int_as_enum_without_cast", "int_as_enum_without_match")
-	content_row.layout_mode = 1  # LAYOUT_MODE_ANCHORS
-	content_row.anchor_right = 1.0
-	content_row.anchor_bottom = 1.0
-	content_row.alignment = BoxContainer.ALIGNMENT_END
-	content_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	parent.add_child(content_row)
-
-	var en_label: Label = Label.new()
-	en_label.name = "EnLabel"
-	en_label.text = en_text
-	en_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	en_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	en_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	en_label.add_theme_font_size_override("font_size", EN_FONT_SIZE)
-	en_label.add_theme_color_override("font_color", Color.WHITE)
-	if GameManager.font_tcm:
-		en_label.add_theme_font_override("font", GameManager.font_tcm)
-	content_row.add_child(en_label)
-
-	var zh_subtitle := SubtitleLabel.new()
-	zh_subtitle.name = "ZhSubtitle"
-	zh_subtitle.set_calligraphic_text(zh_text, ZH_ROW_FIRST_SIZE, ZH_ROW_SIZE_CYCLE, ZH_ROW_COLOR, GameManager.font_zh_title)
-	content_row.add_child(zh_subtitle)
-
-	# 右侧间隔器
-	var spacer: Control = Control.new()
-	spacer.custom_minimum_size = Vector2(SPACER_WIDTH, 0)
-	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	content_row.add_child(spacer)
-
-	return content_row
 
 
 # ── Focus & Animation ──────────────────────────────────
 
-## 仅 tween 上一项与新项（首次/重置后全量）— 减少并行 tween 数量。
+## 全量行焦点刷新（OptionRow 每行先杀后建，见组件注释）。
 func _apply_focus() -> void:
 	if _rows.is_empty():
 		return
-	if _focus_tween and _focus_tween.is_valid():
-		_focus_tween.kill()
-
-	var target_indices: Array[int] = []
-	if _selection.get_previous_focus() < 0:
-		for i: int in range(_rows.size()):
-			target_indices.append(i)
-	else:
-		target_indices = [_selection.get_previous_focus(), _selection.get_selected()]
-
-	_focus_tween = create_tween().set_parallel(true)
-	_focus_tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	for i: int in target_indices:
-		_tween_row_focus(i)
+	for i: int in range(_rows.size()):
+		_rows[i].apply_focus_state(i == _selection.get_selected())
 	_selection.mark_focus_applied()
 
 
-func _tween_row_focus(index: int) -> void:
-	var row: OptionRow = _rows[index]
-	var is_focused: bool = index == _selection.get_selected()
-	var base_width: float = _opts_anchor.size.x
-	var target_width: float = base_width * FOCUS_WIDTH_MULTIPLIER if is_focused else base_width
-	var target_x: float = FOCUS_OFFSET_X if is_focused else 0.0
-	var target_alpha: float = 1.0 if is_focused else UNFOCUSED_MODULATE
-	var target_sweep_scale: float = 1.0 if is_focused else 0.0
-	var target_text_color: Color = Color.BLACK if is_focused else Color.WHITE
-	_focus_tween.tween_property(row.root, "size:x", target_width, FOCUS_DURATION)
-	_focus_tween.tween_property(row.root, "position:x", target_x, FOCUS_DURATION)
-	_focus_tween.tween_property(row.root, "modulate:a", target_alpha, FOCUS_DURATION)
-	_focus_tween.tween_property(row.sweep, "scale:x", target_sweep_scale, FOCUS_DURATION)
-	_focus_tween.tween_property(row.en_label, "self_modulate", target_text_color, FOCUS_DURATION)
-	_focus_tween.tween_property(row.subtitle_label, "self_modulate", target_text_color, FOCUS_DURATION)
+## 杀全部行焦点动画（出场前调用，防残留动画覆盖退出淡出）。
+func _kill_focus_anims() -> void:
+	for row: OptionRow in _rows:
+		row.kill_focus_anim()
 
 
 # ── Input handlers ─────────────────────────────────────
@@ -358,15 +214,14 @@ func _on_hover(index: int) -> void:
 	_sfx()
 
 
-func _on_click(ev: InputEvent, index: int) -> void:
+func _on_activated(index: int) -> void:
 	if not _interactive:
 		return
-	if ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_LEFT and ev.pressed:
-		_sfx()
-		if index == 0:
-			_confirm()
-		else:
-			_cancel()
+	_sfx()
+	if index == 0:
+		_confirm()
+	else:
+		_cancel()
 
 
 func _on_dim_clicked(ev: InputEvent) -> void:

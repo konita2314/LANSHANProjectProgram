@@ -2,6 +2,7 @@
 ## 用于确认覆盖存档的自包含模态对话框。
 ## 动态创建所有 UI — 只需实例化并 add_child。
 ## 从 App.tsx 移植的 OverwriteConfirmModal。
+## 选项行为 scenes/ui/OptionRow 统一组件（与 MainMenuList / TabMenu / QuitModal 同风格）。
 class_name OverwriteConfirm
 extends Control
 
@@ -15,7 +16,7 @@ var _selected_index: int = 1   # Default to "No"
 var _interactive: bool = false
 var _band: Control
 var _branding_box: Control
-var _option_nodes: Array[Control] = []
+var _option_nodes: Array[OptionRow] = []
 var _options: Array[Dictionary] = [
 	{"id": "yes", "title": "Yes", "zh": "是"},
 	{"id": "no", "title": "No", "zh": "否"},
@@ -24,7 +25,6 @@ var _options: Array[Dictionary] = [
 # 字体资源 — 在 _ready() 中加载
 
 const BAND_PADDING: float = 64.0
-const OPTION_HEIGHT: float = 51.0
 
 
 # ===================================================================
@@ -167,8 +167,8 @@ func _create_options() -> void:
 	var container := VBoxContainer.new()
 	container.name = "OptionsContainer"
 	container.alignment = BoxContainer.ALIGNMENT_CENTER
-	container.position = Vector2(size.x - 520, size.y / 2.0 - OPTION_HEIGHT)
-	container.custom_minimum_size = Vector2(480, OPTION_HEIGHT * _options.size())
+	container.position = Vector2(size.x - 520, size.y / 2.0 - OptionRow.ROW_HEIGHT)
+	container.custom_minimum_size = Vector2(480, OptionRow.ROW_HEIGHT * _options.size())
 	container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(container)
 
@@ -181,62 +181,13 @@ func _create_options() -> void:
 	_update_focus()
 
 
-func _create_option_item(index: int, data: Dictionary) -> Control:
-	var container := Control.new()
-	container.name = "Option_" + str(index)
-	container.custom_minimum_size = Vector2(480, OPTION_HEIGHT)
-	container.mouse_filter = Control.MOUSE_FILTER_STOP
-
-	var sweep := ColorRect.new()
-	sweep.name = "Sweep"
-	sweep.color = Color.WHITE
-	sweep.size = Vector2(480, OPTION_HEIGHT)
-	sweep.scale = Vector2(0, 1)
-	sweep.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	container.add_child(sweep)
-
-	var hbox := HBoxContainer.new()
-	hbox.name = "Content"
-	hbox.size = Vector2(480, OPTION_HEIGHT)
-	hbox.alignment = BoxContainer.ALIGNMENT_END
-	hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	container.add_child(hbox)
-
-	var spacer := Control.new()
-	spacer.custom_minimum_size = Vector2(16, 0)
-	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hbox.add_child(spacer)
-
-	# 英文选项标题 → TCM 字体
-	var title_label := Label.new()
-	title_label.name = "Title"
-	title_label.text = data.title
-	title_label.add_theme_font_size_override("font_size", 42)
-	title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	if GameManager.font_tcm: title_label.add_theme_font_override("font", GameManager.font_tcm)
-	hbox.add_child(title_label)
-
-	var spacer2 := Control.new()
-	spacer2.custom_minimum_size = Vector2(12, 0)
-	spacer2.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hbox.add_child(spacer2)
-
-	# 中文选项标签 → SemiBold 字体
-	var zh_label := Label.new()
-	zh_label.name = "ZhLabel"
-	zh_label.text = "" if GameManager.is_locale("en") else data.zh
-	zh_label.add_theme_font_size_override("font_size", 24)
-	zh_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	if GameManager.font_zh_title: zh_label.add_theme_font_override("font", GameManager.font_zh_title)
-	hbox.add_child(zh_label)
-
-	container.mouse_entered.connect(_on_option_hovered.bind(index))
-	container.gui_input.connect(_on_option_clicked.bind(index))
-	container.set_meta("sweep", sweep)
-	container.set_meta("title_label", title_label)
-	container.set_meta("zh_label", zh_label)
-
-	return container
+func _create_option_item(index: int, data: Dictionary) -> OptionRow:
+	var zh_text: String = "" if GameManager.is_locale("en") else data.zh
+	var row := OptionRow.new()
+	row.setup(index, data.title, zh_text, GameManager.font_tcm, GameManager.font_zh_title, 480.0)
+	row.hovered.connect(_on_option_hovered)
+	row.activated.connect(_on_option_activated)
+	return row
 
 
 # ===================================================================
@@ -261,24 +212,7 @@ func _create_footer() -> void:
 
 func _update_focus() -> void:
 	for i: int in range(_option_nodes.size()):
-		var child: Control = _option_nodes[i]
-		var sweep: ColorRect = child.get_meta("sweep")
-		var title: Label = child.get_meta("title_label")
-		var zh: Label = child.get_meta("zh_label")
-		var is_focused: bool = i == _selected_index
-
-		var sweep_tween := create_tween()
-		sweep_tween.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUINT)
-		if is_focused:
-			sweep_tween.tween_property(sweep, "scale:x", 1.2, 0.3).from(0.0)
-			sweep_tween.parallel().tween_property(sweep, "position:x", -60.0, 0.3)
-		else:
-			sweep_tween.tween_property(sweep, "scale:x", 0.0, 0.3)
-			sweep_tween.parallel().tween_property(sweep, "position:x", 0.0, 0.3)
-
-		title.add_theme_color_override("font_color", Color.BLACK if is_focused else Color.WHITE)
-		zh.add_theme_color_override("font_color", Color.BLACK if is_focused else Color(1, 1, 1, 0.8))
-		child.modulate.a = 1.0 if is_focused else 0.4
+		_option_nodes[i].apply_focus_state(i == _selected_index)
 
 
 # ===================================================================
@@ -293,15 +227,14 @@ func _on_option_hovered(index: int) -> void:
 		_play_click()
 
 
-func _on_option_clicked(event: InputEvent, index: int) -> void:
+func _on_option_activated(index: int) -> void:
 	if not _interactive: return
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		_interactive = false
-		_play_click()
-		if index == 0:
-			confirmed.emit()
-		else:
-			cancelled.emit()
+	_interactive = false
+	_play_click()
+	if index == 0:
+		confirmed.emit()
+	else:
+		cancelled.emit()
 
 
 func _input(event: InputEvent) -> void:

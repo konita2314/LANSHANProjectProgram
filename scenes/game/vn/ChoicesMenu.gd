@@ -1,7 +1,8 @@
 ## ChoicesMenu : Control
 ## 选择覆盖层 — 当剧情到达选择节点时显示。
 ##   键盘 ↑↓ 导航，Enter 确认，鼠标点击选择。
-##   样式与动画对齐 TabMenu，选项卡左对齐，文字右对齐。
+## 行本体为 scenes/ui/OptionRow 统一组件（反例形态：单文本标签，标题槽置空；
+## 聚焦右移 +30、不调暗、文字色 白0.85/纯黑 经多参数 apply_focus_state 覆写）。
 class_name ChoicesMenu
 extends Control
 
@@ -9,16 +10,14 @@ signal choice_selected(index: int)
 
 var _focused_idx: int = 0
 var _option_count: int = 0
-var _rows: Array[Control] = []
+var _rows: Array[OptionRow] = []
 var _is_open: bool = false
 
 
 var _anim_tween: Tween = null
 var _entry_tweens: Array[Tween] = []
 
-const ROW_HEIGHT: float = 51.0
 const ROW_WIDTH: float = 480.0
-const FOCUS_SWEEP_DUR: float = 0.25
 const LEFT_MARGIN: float = -50.0
 
 
@@ -52,7 +51,7 @@ func show_options(options: Array[PlotOption], fonts: Dictionary) -> void:
 	vbox.mouse_filter = MOUSE_FILTER_IGNORE
 	# 垂直居中，水平左对齐
 	var vp_size: Vector2 = get_viewport().get_visible_rect().size
-	vbox.position = Vector2(LEFT_MARGIN, vp_size.y / 2.0 - ROW_HEIGHT * _option_count / 2.0)
+	vbox.position = Vector2(LEFT_MARGIN, vp_size.y / 2.0 - OptionRow.ROW_HEIGHT * _option_count / 2.0)
 	add_child(vbox)
 
 	var is_zh: bool = GameManager.is_locale("zh")
@@ -126,55 +125,14 @@ func _animate_enter() -> void:
 # 行构建（对齐 TabMenu 样式）
 # ═══════════════════════════════════════════════════════════════
 
-func _make_row(idx: int, text: String) -> Control:
-	var row := Control.new()
-	row.name = "Choice_" + str(idx)
-	row.custom_minimum_size = Vector2(ROW_WIDTH, ROW_HEIGHT)
-	row.mouse_filter = MOUSE_FILTER_STOP
-
-	# 白色扫入背景
-	var sweep := ColorRect.new()
-	sweep.name = "Sweep"
-	sweep.color = Color.WHITE
-	sweep.size = Vector2(ROW_WIDTH, ROW_HEIGHT)
-	sweep.scale.x = 0.0
-	sweep.mouse_filter = MOUSE_FILTER_IGNORE
-	row.add_child(sweep)
-
-	# 内容行 — 右对齐，文字靠右
-	var hb := HBoxContainer.new()
-	hb.size = Vector2(ROW_WIDTH, ROW_HEIGHT)
-	hb.alignment = BoxContainer.ALIGNMENT_END
-	hb.add_theme_constant_override("separation", 12)
-	hb.mouse_filter = MOUSE_FILTER_IGNORE
-	row.add_child(hb)
-
-	# 左侧间隔
-	var sp := Control.new()
-	sp.custom_minimum_size = Vector2(16, 0)
-	sp.mouse_filter = MOUSE_FILTER_IGNORE
-	hb.add_child(sp)
-
-	# 选项文本 — 右对齐
-	var lbl := Label.new()
-	lbl.text = text
-	lbl.add_theme_font_size_override("font_size", 24)
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+func _make_row(idx: int, text: String) -> OptionRow:
+	var row := OptionRow.new()
 	@warning_ignore("static_called_on_instance")
-	lbl.add_theme_font_override("font", GameManager.select_font(text, GameManager.font_zh_body, GameManager.font_en_body))
-	lbl.mouse_filter = MOUSE_FILTER_IGNORE
-	hb.add_child(lbl)
-
-	# 右侧间隔
-	var sp2 := Control.new()
-	sp2.custom_minimum_size = Vector2(24, 0)
-	sp2.mouse_filter = MOUSE_FILTER_IGNORE
-	hb.add_child(sp2)
-
-	row.mouse_entered.connect(_on_hover.bind(idx))
-	row.gui_input.connect(_on_click.bind(idx))
-	row.set_meta("sweep", sweep)
-	row.set_meta("lbl", lbl)
+	var font: Font = GameManager.select_font(text, GameManager.font_zh_body, GameManager.font_en_body)
+	# 单标签形态（VN 选项反例）：标题槽置空即跳过，文本走副标签槽 + 右侧 24 内缩
+	row.setup(idx, "", text, null, font, ROW_WIDTH, 24.0)
+	row.hovered.connect(_on_hover)
+	row.activated.connect(_on_activated)
 	return row
 
 
@@ -184,17 +142,8 @@ func _make_row(idx: int, text: String) -> Control:
 
 func _update_focus() -> void:
 	for i: int in range(_rows.size()):
-		var row: Control = _rows[i]
-		var on: bool = i == _focused_idx
-		var sweep: ColorRect = row.get_meta("sweep")
-		var lbl: Label = row.get_meta("lbl")
-
-		var tw := create_tween().set_parallel(true)
-		tw.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tw.tween_property(sweep, "scale:x", 1.0 if on else 0.0, FOCUS_SWEEP_DUR)
-		tw.tween_property(row, "position:x", 30.0 if on else 0.0, FOCUS_SWEEP_DUR)
-
-		lbl.add_theme_color_override("font_color", Color.BLACK if on else Color(1, 1, 1, 0.85))
+		# 反例形态覆写：聚焦右移 +30 / 静止 0、不调暗、未聚焦白 0.85 / 聚焦纯黑
+		_rows[i].apply_focus_state(i == _focused_idx, 30.0, 0.0, 1.0, Color(1, 1, 1, 0.85), Color.BLACK)
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -208,10 +157,9 @@ func _on_hover(idx: int) -> void:
 	AudioManager.play_click()
 
 
-func _on_click(event: InputEvent, idx: int) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		AudioManager.play_click()
-		choice_selected.emit(idx)
+func _on_activated(idx: int) -> void:
+	AudioManager.play_click()
+	choice_selected.emit(idx)
 
 
 func _input(event: InputEvent) -> void:
